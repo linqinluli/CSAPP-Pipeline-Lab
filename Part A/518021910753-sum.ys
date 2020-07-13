@@ -1,0 +1,53 @@
+#leader name: 	 严秉昊
+#student number: 518021910753
+
+# Execution begins at address 0
+	.pos 	0
+init: 	irmovl 	Stack, %esp		#set stack pointer
+	irmovl	Stack, %ebp
+	call	Main
+	halt
+
+# Sample linked list
+	.align 	4
+ele1:	
+	.long 	0x00a
+        .long 	ele2
+ele2:	
+	.long 	0x0b0
+	.long 	ele3
+ele3:	
+	.long	0xc00
+	.long 	0
+
+Main:	pushl 	%ebp
+	rrmovl	%esp,	%ebp
+	irmovl	ele1 , 	%eax		#set ele1 as the sum beginning
+	pushl 	%eax
+	call 	sumlist			#function call
+	rrmovl 	%ebp , %esp
+	popl	%ebp
+	ret
+
+# int sum_list(list_ptr ls)
+sumlist:	
+	pushl   %ebp
+        rrmovl  %esp ,%ebp
+        xorl    %eax,%eax       	#set eax (val) = 0
+        mrmovl  8(%ebp) , %edx		
+
+Loop:	mrmovl	(%edx) , %ecx  		#ls->val  ==> %ecx
+	addl	%ecx , %eax		#val += ls->val
+	irmovl	$4 , %edi		
+	addl	%edi , %edx		#next ==> edx
+	mrmovl  (%edx),	%esi		
+	rrmovl	%esi , %edx		#ls->next ==>edx
+	andl	%edx , %edx		#set condition codes
+	jne	Loop			#if ls != 0 goto Loop
+
+End:	rrmovl 	%ebp , %esp
+	popl 	%ebp
+	ret		
+
+	.pos 0x100
+Stack:

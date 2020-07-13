@@ -1,0 +1,55 @@
+#leader name: 	 严秉昊
+#student number: 518021910753
+
+# Execution begins at address 0
+	.pos	0
+init: 	irmovl 	Stack, %esp
+	irmovl	Stack, %ebp
+	call	Main
+	halt
+
+# Sample linked list
+	.align 	4
+ele1:	
+	.long 	0x00a
+        .long 	ele2
+ele2:	
+	.long 	0x0b0
+	.long 	ele3
+ele3:	
+	.long	0xc00
+	.long 	0
+
+Main:	pushl	%ebp			#save
+	rrmovl	%esp , %ebp		
+	irmovl	$4 , %esi		#set the immediate number
+	irmovl	ele1 , %eax
+	pushl 	%eax
+	call	rsum_list
+	rrmovl 	%ebp , %esp
+	popl 	%ebp			#restore
+	ret
+
+rsum_list:
+	pushl	%ebp
+	rrmovl	%esp , %ebp		#save
+	pushl	%ebx
+	subl	%esi , %esp
+	xorl 	%eax , %eax
+	mrmovl	8(%ebp),%edx
+	andl	%edx , %edx		#end of the recursion
+	je	End		
+	mrmovl  (%edx) , %ebx
+	addl	%esi , %edx
+	mrmovl  (%edx) , %edi
+	rmmovl	%edi , (%esp)
+	call	rsum_list		#recursive call
+	addl	%ebx , %eax		#eax(val) += ebx
+
+End:	addl	%esi , %esp
+	popl	%ebx
+	popl 	%ebp			#restore
+	ret
+
+	.pos 0x100
+Stack:
